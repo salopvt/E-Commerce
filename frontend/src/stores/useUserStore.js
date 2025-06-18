@@ -2,7 +2,7 @@ import {create} from "zustand";
 import axios from "../lib/axios";
 import {toast} from "react-hot-toast";
 
-export const useUserStore=create((set,get)=>({
+export const useUserStore=create((set)=>({
   user:null,
   loading:false,
   checkingAuth:true,
@@ -17,7 +17,22 @@ export const useUserStore=create((set,get)=>({
         set({user:res.data.user,loading:false});
     } catch (error) {
         set({loading:false});
-        toast.error(error.response.data.message || "An error occurred");
+        const message = error.response?.data?.message || error.message || "An error occurred";
+        toast.error(message);
+    }
+  },
+  login: async ({email, password, navigate}) => {
+    set({loading:true});
+    console.log("login called", email, password);
+    try {
+      const res = await axios.post("/auth/login", {email, password});
+      set({user:res.data.user,loading:false});
+      toast.success("Login successful");
+      if(navigate) navigate("/");
+    } catch (error) {
+      set({loading:false});
+      const message = error.response?.data?.message || error.message || "An error occurred";
+      toast.error(message);
     }
   }
 }))
