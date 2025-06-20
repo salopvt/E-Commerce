@@ -28,34 +28,73 @@ const setCookies=(res, accessToken , refreshToken) =>{
     
 }
 
-export const signup =async(req,res) =>{
-    const {email,password,name}=req.body;
-    try{
-    const userExists= await User.findOne({ email });
+// export const signup =async(req,res) =>{
+//     const {email,password,name}=req.body;
+//     try{
+//     const userExists= await User.findOne({ email });
     
-    if(userExists){
-        return res.status(400).json({message:"User already exists"});        
+//     if(userExists){
+//         return res.status(400).json({message:"User already exists"});        
+//     }
+//     const user= await User.create({name,email,password});
+//     //authenticate user
+
+//     const {accessToken ,refreshToken}= generateTokens(user._id);
+//     // await storeRefreshToken(user._id,refreshToken);
+
+//     setCookies(res,accessToken,refreshToken);
+
+//     res.status(201).json({ 
+//         user: {
+//             _id: user._id,
+//             name: user.name,
+//             email: user.email,
+//             role: user.role,
+//         }
+//     });
+// } catch(error){
+//     console.log("Error in signup controller", error.message);
+//     res.status(500).json({message: error.message});
+// }
+// };
+
+export const signup = async (req, res) => {
+  try {
+    console.log("Received body:", req.body);
+
+    let { name, email, password } = req.body;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ message: "Missing fields" });
     }
-    const user= await User.create({name,email,password});
-    //authenticate user
 
-    const {accessToken ,refreshToken}= generateTokens(user._id);
-    // await storeRefreshToken(user._id,refreshToken);
+    email = email.trim().toLowerCase();
 
-    setCookies(res,accessToken,refreshToken);
+    const userExists = await User.findOne({ email });
+    console.log("Checking email:", email);
+    console.log("User found:", userExists);
 
-    res.status(201).json({ 
-        user: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        }
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const user = await User.create({ name, email, password });
+
+    const { accessToken, refreshToken } = generateTokens(user._id);
+    setCookies(res, accessToken, refreshToken);
+
+    res.status(201).json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
-} catch(error){
-    console.log("Error in signup controller", error.message);
-    res.status(500).json({message: error.message});
-}
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const login=async(req,res)=>{
