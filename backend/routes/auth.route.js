@@ -17,28 +17,28 @@ const router = express.Router();
 
 
 
-// ✅ Setup Google Strategy
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback"
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const user = {
-        id: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        avatar: profile.photos[0].value
-      };
-      return done(null, user);
-    }
-  )
-);
+// // ✅ Setup Google Strategy
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       callbackURL: "/api/auth/google/callback"
+//     },
+//     async (accessToken, refreshToken, profile, done) => {
+//       const user = {
+//         id: profile.id,
+//         name: profile.displayName,
+//         email: profile.emails[0].value,
+//         avatar: profile.photos[0].value
+//       };
+//       return done(null, user);
+//     }
+//   )
+// );
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+// passport.serializeUser((user, done) => done(null, user));
+// passport.deserializeUser((user, done) => done(null, user));
 
 // ✅ Normal Auth Routes
 router.post("/signup", signup);
@@ -49,23 +49,23 @@ router.get("/profile", protectRoute, getProfile);
 
 
 
-// ✅ Google OAuth Routes
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+// // ✅ Google OAuth Routes
+// router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login", session: false }),
-  (req, res) => {
-    const user = req.user;
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }
-    );
+// router.get(
+//   "/google/callback",
+//   passport.authenticate("google", { failureRedirect: "/login", session: false }),
+//   (req, res) => {
+//     const user = req.user;
+//     const token = jwt.sign(
+//       { id: user.id, email: user.email },
+//       process.env.ACCESS_TOKEN_SECRET,
+//       { expiresIn: "1h" }
+//     );
 
-    // ✅ Redirect to frontend with token
-    res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
-  }
-);
+//     // ✅ Redirect to frontend with token
+//     res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
+//   }
+// );
 
 export default router;
