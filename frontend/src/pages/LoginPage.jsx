@@ -1,9 +1,9 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +16,7 @@ const LoginPage = () => {
     console.log("Login form submitted", email, password);
     login({ email, password, navigate });
   };
+
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <motion.div
@@ -108,6 +109,24 @@ const LoginPage = () => {
               )}
             </button>
           </form>
+
+          {/* Google Login Button */}
+          <button
+            onClick={() => {
+              window.location.href = "http://localhost:5000/api/auth/google";
+            }}
+            className="w-full flex justify-center mt-4 py-2 px-4 border border-gray-500 
+            rounded-md shadow-sm text-sm font-medium text-white bg-red-500 
+            hover:bg-red-600 transition duration-150 ease-in-out"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+              alt="Google"
+              className="h-5 w-5 mr-2"
+            />
+            Continue with Google
+          </button>
+
           <p className="mt-8 text-center text-sm text-gray-400">
             Not a member?{" "}
             <Link

@@ -117,14 +117,16 @@ import Product from '../models/product.model.js';
  }
 
  export const getProductsByCategory=async(req,res) =>{
-    const {category}= req.params;
-    try {
-        const products=await Product.find({category});
-        res.json(products);
-    } catch (error) {
-        console.log("Error in getProductsbyCategory controller",error.message);
-        res.staus(500).json({message:"Server error",error:error.message});
-    }
+    const { category } = req.params;
+	try {
+		const products = await Product.find({
+			category: new RegExp(`^${category}$`, "i")
+		});
+		res.json(products);
+	} catch (error) {
+		console.log("Error in getProductsbyCategory controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
  }
 
  export const toggleFeaturedProduct=async(req,res)=>{

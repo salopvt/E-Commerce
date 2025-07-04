@@ -3,6 +3,7 @@ import User from '../models/user.model.js';
 // to check is user is autheticated
 export const protectRoute=async (req,res,next) =>{
    // next() // will call the next function which is adminroute
+   
    try{
     const accessToken= req.cookies.accessToken;
 
@@ -43,4 +44,5 @@ export const adminRoute= (req,res,next) =>{
     } else{
         return res.status(403).json({message:"Access denied-Admin only"});
     }
+    
 }

@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser"; //to access cookie
 import cors from "cors";
+import session from "express-session";          // ✅ Required for passport
+import passport from "passport";  
+
 
 import authRoutes from "./routes/auth.route.js";
 import productRoutes from "./routes/product.route.js";
@@ -20,9 +23,17 @@ app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
 }));
+app.use(cookieParser());
+app.use(session({
+    secret: "your-session-secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.json()); //allows you to parse the body of request
-app.use(cookieParser());
+
 
 app.use("/api/auth",authRoutes);
 app.use("/api/products", productRoutes);
@@ -37,6 +48,7 @@ app.listen(PORT,() =>{
 
     connectDB();
 });
+
 
 
 

@@ -6,7 +6,10 @@ import Order from "../models/order.model.js";
 dotenv.config();
 
 export const createCheckoutSession=async(req,res)=>{
+   
     try {
+         
+
         const {products,couponCode}=req.body;
 
         if(!Array.isArray(products)|| products.length===0){
@@ -27,7 +30,8 @@ export const createCheckoutSession=async(req,res)=>{
                         images:[product.image],
                     },
                     unit_amount:amount
-                 }
+                 },
+                 quantity: product.quantity || 1,
             }
         });
        let coupon= null;
@@ -37,6 +41,11 @@ export const createCheckoutSession=async(req,res)=>{
             totalAmount-=Math.round(totalAmount* coupon.discountPercentage/100);
         }
        }
+       console.log("✅ Stripe session creation start");
+console.log("Total amount (in cents):", totalAmount);
+console.log("Coupon object:", coupon);
+console.log("User:", req.user);
+console.log("Line items:", lineItems);
 
        //create the session
        const session=await stripe.checkout.sessions.create({
@@ -127,7 +136,7 @@ export const checkoutsuccess=async(req,res)=>{
              })
 
              await newOrder.save();
-             res.json(200).json({
+             res.status(200).json({
                 success:true,
                 message:"Payment successful,order created,and coupon dactivated if used,",
                 orderId: newOrder._id,
@@ -135,6 +144,9 @@ export const checkoutsuccess=async(req,res)=>{
         }
     } catch (error) {
         console.log("error in checkoutsuccess controller ");
-        res.json(500)({message:"Server error",error:error.message})
+        if (!res.headersSent) {
+  res.status(500).json({ message: "Server error", error: error.message });
+}
+
     }
 }
