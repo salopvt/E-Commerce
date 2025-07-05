@@ -1,5 +1,6 @@
  import cloudinary from '../lib/cloudinary.js';
 import Product from '../models/product.model.js';
+import { redis } from "../lib/redis.js";
 
 // for admin only
  export const getAllProducts= async(req,res) =>{
@@ -18,7 +19,7 @@ import Product from '../models/product.model.js';
         //first try to fetch from redis
         let featuredProducts= await redis.get("featured_products");
         if(featuredProducts){
-            return res.json(JSON.parse(featuredproducts));
+            return res.json(JSON.parse(featuredProducts));
         }
 
         //if not in redis then in mongodb

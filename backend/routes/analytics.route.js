@@ -4,7 +4,7 @@ import { getAnalyticsData,getDailySalesData } from "../controllers/analytics.con
 
 const router=express.Router();
 
-router.post("/",protectRoute,adminRoute,async(req,res)=>{
+router.get("/",protectRoute,adminRoute,async(req,res)=>{
     try {
         const analyticsData= await getAnalyticsData();
 
