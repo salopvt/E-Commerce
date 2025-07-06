@@ -1,12 +1,11 @@
-import Coupon from "../models/coupon.model.js";
-import { stripe } from "../lib/stripe.js";
-import dotenv from "dotenv";
-import Order from "../models/order.model.js";
 
-dotenv.config();
+import Coupon from "../models/coupon.model.js";
+import { getStripe } from "../lib/stripe.js";
+import Order from "../models/order.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
+    const stripe = getStripe();
     const { products, couponCode } = req.body;
 
     if (!Array.isArray(products) || products.length === 0) {

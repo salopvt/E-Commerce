@@ -13,8 +13,9 @@ import couponRoutes from "./routes/coupon.route.js";
 import paymentRoutes from "./routes/payment.route.js"
 import analyticsRoutes from "./routes/analytics.route.js";
 
+
 import {connectDB} from "./lib/db.js";
-dotenv.config(); //allows you to read the content of env file
+dotenv.config({ path: './backend/.env' }); // ensures .env is loaded from backend folder
 
 const app =express();
 const PORT =process.env.PORT || 5000;
@@ -49,7 +50,3 @@ app.listen(PORT,() =>{
     connectDB();
 });
 
-
-
-
-//PKWTWS8WeCwiB9mF

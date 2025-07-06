@@ -1,6 +1,6 @@
  import cloudinary from '../lib/cloudinary.js';
 import Product from '../models/product.model.js';
-import { redis } from "../lib/redis.js";
+// import { redis } from "../lib/redis.js";
 
 // for admin only
  export const getAllProducts= async(req,res) =>{
@@ -119,15 +119,15 @@ import { redis } from "../lib/redis.js";
 
  export const getProductsByCategory=async(req,res) =>{
     const { category } = req.params;
-	try {
-		const products = await Product.find({
-			category: new RegExp(`^${category}$`, "i")
-		});
-		res.json(products);
-	} catch (error) {
-		console.log("Error in getProductsbyCategory controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
+    try {
+        const products = await Product.find({
+            category: new RegExp(`^${category}$`, "i")
+        });
+        res.json(products);
+    } catch (error) {
+        console.log("Error in getProductsbyCategory controller", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
  }
 
  export const toggleFeaturedProduct=async(req,res)=>{
