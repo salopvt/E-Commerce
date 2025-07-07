@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "../stores/useUserStore"; // adjust path if needed
 
 const AuthSuccess = () => {
   const navigate = useNavigate();
+  const { checkAuth } = useUserStore(); // ✅ Get auth checker from store
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -10,7 +12,8 @@ const AuthSuccess = () => {
 
     if (token) {
       localStorage.setItem("token", token);
-      navigate("/"); // ✅ Redirect to home or dashboard
+      checkAuth(); // ✅ Refresh user state after setting token
+      navigate("/"); // Redirect to homepage or dashboard
     } else {
       navigate("/login");
     }

@@ -9,16 +9,26 @@ name:{
 
 email:{
     type:String,
-    required:[true,"Email is required"],
+    required:[true, "Email is required"],
     unique:true,
     lowercase:true,
     trim:true
 },
 password:{
     type:String,
-    required:[true,"Password is required"],
     minlength:[6,"Password must be at least 6 characters long"]
 },
+
+googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+
+  avatar: {
+    type: String
+  },
+
 cartItems:[
     {
       quantity:{
@@ -46,15 +56,15 @@ role:{
 
 //pre-save hook to hash password before saving to database
 userSchema.pre("save",async function(next){
-    if(!this.isModified("password")) return next();
+    if (!this.isModified("password") || !this.password) return next();
 
-    try{
-        const salt=await bcrypt.genSalt(10);
-        this.password=await bcrypt.hash(this.password,salt);
-        next()
-    } catch (error){
-        next(error)
-    }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error); // <-- ✅ handle any error that occurs during hashing
+  }
 })
 
 //comapare password

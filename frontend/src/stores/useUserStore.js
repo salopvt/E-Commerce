@@ -59,6 +59,18 @@ export const useUserStore=create((set)=>({
 			set({ checkingAuth: false, user: null });
 		}
 	},
+	refreshToken: async () => {
+    try {
+      const res = await axios.post("/auth/refresh-token", {}, { withCredentials: true });
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+      console.log("Token refreshed");
+    } catch (err) {
+      console.error("Failed to refresh token:", err);
+      toast.error("Session expired. Please log in again.");
+      set({ user: null });
+    }
+  },
 }))
 
 let refreshPromise = null;

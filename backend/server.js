@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser"; //to access cookie
 import cors from "cors";
 import session from "express-session";          // ✅ Required for passport
-import passport from "passport";  
+import passport from "passport"; 
+import "./lib/passport.js"; 
 
 
 import authRoutes from "./routes/auth.route.js";

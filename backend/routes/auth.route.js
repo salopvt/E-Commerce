@@ -17,29 +17,6 @@ const router = express.Router();
 
 
 
-// // ✅ Setup Google Strategy
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//       callbackURL: "/api/auth/google/callback"
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       const user = {
-//         id: profile.id,
-//         name: profile.displayName,
-//         email: profile.emails[0].value,
-//         avatar: profile.photos[0].value
-//       };
-//       return done(null, user);
-//     }
-//   )
-// );
-
-// passport.serializeUser((user, done) => done(null, user));
-// passport.deserializeUser((user, done) => done(null, user));
-
 // ✅ Normal Auth Routes
 router.post("/signup", signup);
 router.post("/login", login);
@@ -47,25 +24,44 @@ router.post("/logout", logout);
 router.post("/refresh-token", refreshToken);
 router.get("/profile", protectRoute, getProfile);
 
+// ✅ INITIATE Google OAuth
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 
 // // ✅ Google OAuth Routes
-// router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login", session: false }),
+  (req, res) => {
+    const user = req.user;
 
-// router.get(
-//   "/google/callback",
-//   passport.authenticate("google", { failureRedirect: "/login", session: false }),
-//   (req, res) => {
-//     const user = req.user;
-//     const token = jwt.sign(
-//       { id: user.id, email: user.email },
-//       process.env.ACCESS_TOKEN_SECRET,
-//       { expiresIn: "1h" }
-//     );
+    const accessToken = jwt.sign(
+  { userId: user._id },
+  process.env.ACCESS_TOKEN_SECRET,
+  { expiresIn: "15m" }
+);
 
-//     // ✅ Redirect to frontend with token
-//     res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`);
-//   }
-// );
+    const refreshTokenValue = jwt.sign(
+      { userId: user._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // ✅ Set HTTP-only cookie with refresh token
+    res.cookie("refreshToken", refreshTokenValue, {
+      httpOnly: true,
+      secure: false, // change to true in production (requires HTTPS)
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // ✅ Redirect to frontend with access token
+    res.redirect(`${process.env.CLIENT_URL}/auth/success`);
+
+  }
+);
 
 export default router;
